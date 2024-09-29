@@ -77,33 +77,45 @@ class StudentController extends Controller
 
     public function search(Request $request): View|Factory|Application
     {
-        $search = request('search');
+        $search = $request->input('search');
+        $searchBy = $request->input('search_by');
+        $minScholarship = $request->input('min_scholarship');
+        $maxScholarship = $request->input('max_scholarship');
 
-        if (strpos($search, '@email.com') !== false) {
-            $students = Student::where('email', 'like', "%{$search}%")->get();
-            return view('student.index', compact('students'));
-        }
+        $students = Student::query();
 
-
-        if (is_numeric($search) && (int)$search <= 4 && (int)$search > 0) {
-            $students = Student::when($search, function ($query, $search) {
-                return $query->where('course', 'like', "$search");
-            })->get();
-        } elseif (is_numeric($search) && (int)$search > 1900 && (int)$search < 3000) {
-            $students = Student::when($search, function ($query, $search) {
+        if ($search && $searchBy) {
+            $students->when($searchBy == 'first_name', function ($query) use ($search) {
+                return $query->where('first_name', 'like', "%{$search}%");
+            })->when($searchBy == 'last_name', function ($query) use ($search) {
+                return $query->where('last_name', 'like', "%{$search}%");
+            })->when($searchBy == 'birth_date', function ($query) use ($search) {
                 return $query->where('birth_date', 'like', "%{$search}%");
-            })->get();
-        } else {
-            $students = Student::when($search, function ($query, $search) {
-                return $query->where('first_name', 'like', "$search")
-                    ->orWhere('last_name', 'like', "$search")
-                    ->orWhere('gender', 'like', "$search")
-                    ->orWhere('scholarship', 'like', "$search")
-                    ->orWhere('address', 'like', "%{$search}%");
-            })->get();
+            })->when($searchBy == 'course', function ($query) use ($search) {
+                return $query->where('course', $search);
+            })->when($searchBy == 'scholarship', function ($query) use ($search) {
+                return $query->where('scholarship', 'like', "%{$search}%");
+            })->when($searchBy == 'gender', function ($query) use ($search) {
+                return $query->where('gender', $search);
+            })->when($searchBy == 'email', function ($query) use ($search) {
+                return $query->where('email', 'like', "%{$search}%");
+            })->when($searchBy == 'address', function ($query) use ($search) {
+                return $query->where('address', 'like', "%{$search}%");
+            })->when($searchBy == 'created_at', function ($query) use ($search) {
+                return $query->where('created_at', 'like', "%{$search}%");
+            });
         }
+
+        if ($minScholarship) {
+            $students->where('scholarship', '>=', $minScholarship);
+        }
+
+        if ($maxScholarship) {
+            $students->where('scholarship', '<=', $maxScholarship);
+        }
+
+        $students = $students->get();
 
         return view('student.index', compact('students'));
     }
-
 }

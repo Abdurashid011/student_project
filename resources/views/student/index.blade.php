@@ -5,20 +5,48 @@
 @section('content')
 
     <h1>Search Students</h1>
-    <div class="d-flex justify-content-between mb-3">
-        <form action="{{ route('search') }}" method="GET" class="me-2" style="flex: 1;">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search"
-                       value="{{ request('search') }}">
-                <button class="btn btn-primary" type="submit">Search</button>
-            </div>
-        </form>
 
-        <a href="{{ route('student.create') }}" class="btn btn-success">Add New Student</a>
+    <div class="mb-3">
+        <div class="row">
+            <div class="col-md-9">
+                <!-- Search qismi -->
+                <form action="{{ route('search') }}" method="GET" class="d-flex flex-wrap gap-2">
+                    <div class="input-group" style="max-width: 400px;">
+                        <input type="text" name="search" class="form-control form-control-lg" placeholder="Search"
+                               value="{{ request('search') }}">
+                        <select name="search_by" class="form-select form-select-lg">
+                            <option selected disabled hidden>Select</option>
+                            <option value="first_name">First Name</option>
+                            <option value="last_name">Last Name</option>
+                            <option value="birth_date">Birth Date</option>
+                            <option value="course">Course</option>
+                            <option value="scholarship">Scholarship</option>
+                            <option value="gender">Gender</option>
+                            <option value="email">Email</option>
+                            <option value="address">Address</option>
+                            <option value="created_at">Created At</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <input type="number" name="min_scholarship" class="form-control form-control-lg"
+                               placeholder="Min Scholarship" value="{{ request('min_scholarship') }}">
+                        <input type="number" name="max_scholarship" class="form-control form-control-lg"
+                               placeholder="Max Scholarship" value="{{ request('max_scholarship') }}">
+                    </div>
+
+                    <button class="btn btn-primary btn-lg" type="submit">Search</button>
+                </form>
+            </div>
+
+            <div class="col-md-3 text-md-end mt-2 mt-md-0">
+                <a href="{{ route('student.create') }}" class="btn btn-success btn-lg">Add New Student</a>
+            </div>
+        </div>
     </div>
 
     @if ($students->count() > 0)
-        <table class="table table-striped">
+        <table class="table table-striped table-sm">
             <thead>
             <tr>
                 <th>#</th>
@@ -47,7 +75,8 @@
                     <td>{{ $student->created_at }}</td>
                     <td class="d-flex">
                         <a href="{{ route('student.edit', $student->id) }}" class="btn btn-warning btn-sm me-2">Edit</a>
-                        <form action="{{ route('student.destroy', $student->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('student.destroy', $student->id) }}" method="POST"
+                              style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
