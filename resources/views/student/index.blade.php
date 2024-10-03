@@ -27,7 +27,6 @@
                             <option value="created_at">Created At</option>
                         </select>
                     </div>
-
                     <div class="d-flex gap-2">
                         <input type="number" name="min_scholarship" class="form-control form-control-lg"
                                placeholder="Min Scholarship" value="{{ request('min_scholarship') }}">
@@ -64,7 +63,7 @@
             <tbody>
             @foreach($students as $index => $student)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $loop->iteration + ($students->currentPage() - 1) * $students->perPage() }}</td>
                     <td>{{ $student->first_name }} {{ $student->last_name }}</td>
                     <td>{{ $student->birth_date }}</td>
                     <td>{{ $student->course }}</td>
@@ -86,6 +85,23 @@
             @endforeach
             </tbody>
         </table>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {{ $students->onFirstPage() ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ $students->previousPageUrl() }}">Previous</a>
+                </li>
+                @for ($i = 1; $i <= $students->lastPage(); $i++)
+                    <li class="page-item {{ $i == $students->currentPage() ? 'active' : '' }}">
+                        <a class="page-link" href="{{ $students->url($i) }}">{{ $i }}</a>
+                    </li>
+                @endfor
+                <li class="page-item {{ $students->hasMorePages() ? '' : 'disabled' }}">
+                    <a class="page-link" href="{{ $students->nextPageUrl() }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+
     @else
         <p>No students available.</p>
     @endif

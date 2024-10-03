@@ -13,7 +13,7 @@ class StudentController extends Controller
 {
     public function index(): View|Factory|Application
     {
-        $students = Student::all();
+        $students = Student::query()->paginate(10);
         return view('student.index', compact('students'));
     }
 
