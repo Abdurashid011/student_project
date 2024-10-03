@@ -9,6 +9,8 @@ class Student extends Model
 {
     use HasFactory;
 
+    protected $table = 'students';
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -19,4 +21,10 @@ class Student extends Model
         'course',
         'scholarship',
     ];
+
+    public function subjects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class, 'student_subjects', 'student_id', 'subject_id');
+    }
+
 }

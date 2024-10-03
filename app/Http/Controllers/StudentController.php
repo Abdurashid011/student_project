@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -43,7 +44,10 @@ class StudentController extends Controller
 
     public function show(Student $student): View|Factory|Application
     {
-        return view('student.show', compact('student'));
+        $student = Student::with('subjects')->find($student->getAttribute('id'));
+        $allSubjects = Subject::all();
+
+        return view('student.show', compact('student', 'allSubjects'));
     }
 
     public function edit(Student $student)
